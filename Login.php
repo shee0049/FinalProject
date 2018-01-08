@@ -13,16 +13,37 @@ if ($_SERVER['REQUEST_METHOD']=="POST"){
         $pass = trim(sha1($_POST['studentPass']));
         $userName = trim($_POST['studentID']);
         
-        $sql = "SELECT Userid, Password FROM User WHERE Userid = ?";
+        $sql = "SELECT Userid, Password, Name FROM User WHERE Userid = ?";
         
-        $stmt = mysqli_prepare($link, $sql);
-        
-        mysqli_stmt_bind_param($stmt, 's', $userName);
-        
-        mysqli_stmt_execute($stmt);
-        
-        mysqli_stmt_bind_result($stmt, $user, $pass);                        
+        if($stmt = mysqli_prepare($link, $sql)){
+            mysqli_stmt_bind_param($stmt, 's', $user);
+            $user = $userName;
+            
+            if(mysqli_stmt_execute($stmt)){
+                mysqli_stmt_store_result($stmt);                
+                if (mysqli_stmt_num_rows($stmt) == 1){
+                    mysqli_stmt_bind_result($stmt, $username, $hashed_password, $name);
+                    
+                    if(mysqli_stmt_fetch($stmt)){
+                        if($pass == $hashed_password){
+                            session_start();
+                            $_SESSION['username'] = $username;      
+                            $_SESSION['name'] = $name;
+                            header("location: Index.php");
+                        }else {
+                            $passErr = "Password is Incorrect";
+                        }
+                    }
+                }else {
+                    $userErr = "Username is Incorrect";
+                }                    
+            }else {
+                echo "Something went horribly wrong!";
+            }                
+        } 
+        mysqli_stmt_close($stmt);
     }
+    mysqli_close($link);
 }
 ?>
 
