@@ -1,7 +1,6 @@
 <?php
 require_once 'dbconnection.php';
-function checkUser ($userId){
-    
+function checkUser ($userId){    
     $link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
     
     $selectUser = "SELECT Userid FROM User WHERE Userid = ?";
