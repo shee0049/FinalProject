@@ -3,7 +3,7 @@ session_start();
 if (isset($_SESSION["username"])){
     require 'Common/LoggedIn.php';
     echo "<div class='container'>";
-    echo "<h1>Welcome $_SESSION[username], to the Algonquin Social Media Website AWESOME!</h1>";
+    echo "<h1>Welcome $_SESSION[username], to the Algonquin Social Media Website</h1>";
     echo "</div>";
 }
 else {
