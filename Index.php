@@ -1,13 +1,17 @@
 <?php 
 session_start();
-require "Common/Header.php"; 
 if (isset($_SESSION["username"])){
-    echo 'Hello!'. $_SESSION["username"];
+    require 'Common/LoggedIn.php';
+    echo "<div class='container'>";
+    echo "<h1>Welcome $_SESSION[username], to the Algonquin Social Media Website</h1>";
+    echo "</div>";
 }
-?>
-<div class="container">
-    <h1>Welcome to the Algonquin Social Media Website</h1>
-    <p>If this is your first time using click <a href="SignUp.php">here!</a> to sign up</p>
-    <p>Otherwise <a href="Login.php">here</a> to log in</p>
-</div>
-<?php require 'Common/Footer.php'; ?>
+else {
+    require 'Common/Header.php';
+    echo "<div class='container'>";
+    echo "<h1>Welcome to the Algonquin Social Media Website</h1>";
+    echo "<p>If this is your first time using click <a href='SignUp.php'>here!</a> to sign up</p>";
+    echo "<p>Otherwise <a href='Login.php'>here</a> to log in</p>";
+    echo "</div>";
+}
+require 'Common/Footer.php'; ?>
