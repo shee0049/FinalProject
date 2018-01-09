@@ -41,9 +41,12 @@ if ($_SERVER['REQUEST_METHOD']=="POST"){
                 echo "Something went horribly wrong!";
             }                
         } 
+        else {
+            $userErr = "something went wrong processing your request";
+        }          
         mysqli_stmt_close($stmt);
-    }
-    mysqli_close($link);
+        mysqli_close($link);
+    }    
 }
 ?>
 
