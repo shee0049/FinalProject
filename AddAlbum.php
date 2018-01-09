@@ -65,5 +65,6 @@ if (!isset($_SESSION["username"])){
      </div>    
         
 
-    </form>
+    </form> 
+</div>
 <?php require '/Common/Footer.php';?>
