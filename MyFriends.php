@@ -7,7 +7,26 @@ require 'dbconnection.php';
 if (!isset($_SESSION["username"])){
     header("Location: Login.php");
 }
+$link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
+$user = $_SESSION['username'];
 
+if ($_SERVER["REQUEST_METHOD"] == "POST"){    
+    if (isset($_POST["accept"])){
+        $updateSql = "UPDATE Friendship SET status='accepted' WHERE Friend_Requesterid=?";
+        $friends = $_POST["friends"];                
+        foreach ($friends as $friend){
+            $stmt = mysqli_prepare($link, $updateSql);
+            mysqli_stmt_bind_param($stmt, 's', $f);
+            $f = $friend;
+            mysqli_stmt_execute($stmt);
+        }
+        header("Location:MyFriends.php");
+    }
+    else if (isset($_POST["deny"])){
+        
+    }
+    
+}
 ?>
 
 <div class="container">
@@ -20,6 +39,27 @@ if (!isset($_SESSION["username"])){
             <th>Name</th>
             <th>Shared Albums</th>
             <th>Defriend</th>            
+        </tr>
+        <tr>
+            <?php 
+                $sql = "SELECT Friendship.Friend_Requesterid, Friendship.Friend_Requesteeid FROM Friendship"
+                      . " WHERE (Friendship.Friend_Requesterid=? OR Friendship.Friend_Requesteeid=?)"
+                      . " AND Friendship.Status='accepted'";                    
+                $stmt = mysqli_prepare($link, $sql);
+                mysqli_stmt_bind_param($stmt, 'ss', $rq, $re);
+                $rq = $user;
+                $re = $user;    
+                if(mysqli_stmt_execute($stmt)){
+                    mysqli_stmt_bind_result($stmt, $requester, $requestee);                  
+                    while (mysqli_stmt_fetch($stmt)){
+                        if($requestee == $user){
+                            echo "<tr><td>$requester</td><td>PLACEHOLDER</td><td><input type='checkbox' name='defriends[]' value='$requester'></td></tr>";
+                        }else {
+                            echo "<tr><td>$requestee</td><td>PLACEHOLDER</td><td><input type='checkbox' name='defriends[]' value='$requestee'></td></tr>";
+                        }                    
+                    }                        
+                }
+            ?>
         </tr>
     </table>
         <button type="submit" class="btn btn-primary">Defriend Selected</button>
@@ -35,25 +75,22 @@ if (!isset($_SESSION["username"])){
             </tr>
             <tr>
                 <?php    
-                    $link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
-                    $user = $_SESSION['username'];
-                    $sql = "SELECT Friend_Requesterid FROM Friendship WHERE status='request' and Friend_Requesteeid=?";
-                    
+                    $sql = "SELECT Friend_Requesterid FROM Friendship WHERE status='request' and Friend_Requesteeid=?";                    
                     $stmt = mysqli_prepare($link, $sql);
                     mysqli_stmt_bind_param($stmt, 's', $requestee);
                     $requestee = $user;
                     
                     if(mysqli_stmt_execute($stmt)){
-                        mysqli_stmt_bind_result($stmt, $requester);
-                        if (mysqli_stmt_fetch($stmt)){
-                            echo "<td>$requester</td><td><input type='checkbox' name='$requester' value='$requester'></td>";   
+                        mysqli_stmt_bind_result($stmt, $requester);                  
+                        while (mysqli_stmt_fetch($stmt)){
+                            echo "<tr><td>$requester</td><td><input type='checkbox' name='friends[]' value='$requester'></td></tr>";   
                         }                        
                     }
                 ?>
             </tr>            
         </table>
-        <button type="submit" class="btn btn-primary" value="accept">Accept Selected</button>            
-        <button type="submit" class="btn btn-primary" value="denny">Deny Selected</button>
+        <input type="submit" class="btn btn-primary" name="accept" value="Accept Selected">          
+        <input type="submit" class="btn btn-primary" name="deny" value="Deny Select">
     </form>
 </div>
 
