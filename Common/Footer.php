@@ -14,6 +14,15 @@
 <script src="/AlgCommon/Scripts/jquery-2.2.4.min.js" type="text/javascript"></script>
 <script src="/AlgCommon/Contents/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="Lab4Scripts/site.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".warningmsg").on('click', function () {
+            if(!confirm("The Selected friends will be defriended!")){
+                return false;
+            }
+        });           
+    });
+</script>
 </body>
 </html>
 

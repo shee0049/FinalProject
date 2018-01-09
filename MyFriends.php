@@ -22,10 +22,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
         }
         header("Location:MyFriends.php");
     }
-    else if (isset($_POST["deny"])){
+    else if (isset($_POST["deny"])){        
+        $friends = $_POST["friends"];
+        $deleteSql = "DELETE FROM Friendship WHERE (Friendship.Friend_Requesterid=? OR Friendship.Friend_Requesteeid=?) "
+                . "AND (Friendship.Friend_Requesterid=? OR Friendship.Friend_Requesteeid=?) AND Status='request'";
         
+        foreach ($friends as $friend) {
+            $stmt = mysqli_prepare($link, $deleteSql);
+            mysqli_stmt_bind_param($stmt, 'ssss', $a,$b,$c,$d);
+            $a = $b = $user;
+            $c = $d = $friend;
+            
+            mysqli_execute($stmt);
+        }
+        header("Location: MyFriends.php");
     }
-    
+    else {
+        $deleteSql = "DELETE FROM Friendship WHERE (Friendship.Friend_Requesterid=? OR Friendship.Friend_Requesteeid=?) "
+                . "AND (Friendship.Friend_Requesterid=? OR Friendship.Friend_Requesteeid=?) AND Status='accepted'";
+        $defriends = $_POST["defriends"];
+        
+        foreach ($defriends as $defriend) {
+            $stmt = mysqli_prepare($link, $deleteSql);
+            mysqli_stmt_bind_param($stmt, 'ssss', $a,$b,$c,$d);
+            $a = $b = $user;
+            $c = $d = $defriend;
+            
+            mysqli_execute($stmt);
+        }
+        header("Location: MyFriends.php");
+    }      
 }
 ?>
 
@@ -53,16 +79,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
                     mysqli_stmt_bind_result($stmt, $requester, $requestee);                  
                     while (mysqli_stmt_fetch($stmt)){
                         if($requestee == $user){
-                            echo "<tr><td>$requester</td><td>PLACEHOLDER</td><td><input type='checkbox' name='defriends[]' value='$requester'></td></tr>";
+                            echo "<tr><td>$requester</td><td>PLACEHOLDER</td><td><input type='checkbox' class='defriend' name='defriends[]' value='$requester'></td></tr>";
                         }else {
-                            echo "<tr><td>$requestee</td><td>PLACEHOLDER</td><td><input type='checkbox' name='defriends[]' value='$requestee'></td></tr>";
+                            echo "<tr><td>$requestee</td><td>PLACEHOLDER</td><td><input type='checkbox' class='defriend' name='defriends[]' value='$requestee'></td></tr>";
                         }                    
                     }                        
                 }
             ?>
         </tr>
     </table>
-        <button type="submit" class="btn btn-primary">Defriend Selected</button>
+        <input type="submit" class="warningmsg btn btn-primary" name="defriend" value="Defriend Selected">
     </form>
     <br>
     <br>
@@ -81,10 +107,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
                     $requestee = $user;
                     
                     if(mysqli_stmt_execute($stmt)){
-                        mysqli_stmt_bind_result($stmt, $requester);                  
+                        mysqli_stmt_bind_result($stmt, $requester);                                          
                         while (mysqli_stmt_fetch($stmt)){
-                            echo "<tr><td>$requester</td><td><input type='checkbox' name='friends[]' value='$requester'></td></tr>";   
-                        }                        
+                            if (isset($requester)){
+                                echo "<tr><td>$requester</td><td><input type='checkbox' name='friends[]' value='$requester'></td></tr>";   
+                            }
+                        }
                     }
                 ?>
             </tr>            
@@ -93,6 +121,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
         <input type="submit" class="btn btn-primary" name="deny" value="Deny Select">
     </form>
 </div>
-
 <?php require 'Common/Footer.php' ;?>
 

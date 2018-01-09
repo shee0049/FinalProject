@@ -13,19 +13,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $userid = trim($_POST["studentID"]);
 
     if (ValidateUserID($userid)) {
-        $link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
+        if ($userid == $_SESSION["username"]){
+            $err_StudentId="you cannot add your own username";
+        }
+        else {
+            $link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
-        $sql = "SELECT Userid FROM User WHERE Userid = ?";
-        // Get user that is entered on form from the database
-        if ($stmt = mysqli_prepare($link, $sql)) {
-            mysqli_stmt_bind_param($stmt, 's', $user);
-            $user = $userid;
+            $sql = "SELECT Userid FROM User WHERE Userid = ?";
+            // Get user that is entered on form from the database
+            if ($stmt = mysqli_prepare($link, $sql)) {
+                mysqli_stmt_bind_param($stmt, 's', $user);
+                $user = $userid;
 
-            if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_store_result($stmt);
-                // If the user is found continue, otherwise error.
-                if (mysqli_stmt_num_rows($stmt) == 1) {
-                    mysqli_stmt_bind_result($stmt, $username);
+                if (mysqli_stmt_execute($stmt)) {
+                    mysqli_stmt_store_result($stmt);
+                    // If the user is found continue, otherwise error.
+                    if (mysqli_stmt_num_rows($stmt) == 1) {
+                        mysqli_stmt_bind_result($stmt, $username);
                     if (mysqli_stmt_fetch($stmt)) {
                         // Send friend request to user
                         $fsql = "INSERT INTO Friendship VALUES (?,?,?)";
@@ -41,19 +45,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $friendmsg = "There was a problem with your request, please try again.";
                         }
                     }
-                    } 
-                }else {
+                    } else {
                     $err_StudentId = "Could not find a user with that id.";
+                }
                 }
             } else {
                 $err_StudentId = "Could not find a user with that id.";
-            }
-        } else {
-            echo "Something went horribly wrong!";
-        }
-        mysqli_stmt_close($stmt);
-        mysqli_close($link);
-    }    
+              }
+            mysqli_stmt_close($stmt);
+            mysqli_close($link);
+        }        
+    }
+}
+            
 ?>
 
 <div class="container">
@@ -70,5 +74,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <button type="submit" class="btn btn-primary">Send Friend Request</button>
     </form>
 </div>
-
 <?php require 'Common/Footer.php'; ?>
