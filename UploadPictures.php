@@ -2,6 +2,7 @@
 session_start();
 require '/Common/Loggedin.php'; 
 require 'dbconnection.php';
+include '/Common/Constants.php';
 
 if (!isset($_SESSION["username"])){
     header("Location: Login.php");
@@ -20,7 +21,45 @@ if (mysqli_stmt_execute($stmt)){
         array_push($titles, $title);
     }
 }
+
+
+if ($_POST["btnSubmit"] == "Submit") 
+{
+    for($i = 0; $i < count($_FILES["boxUpload"]["tmp_name"]); $i++){
+	if ($_FILES['boxUpload']['error'][$i] == 0)
+	{ 	
+            $filePath = Save_Uploaded_Files(ORIGINAL_IMAGE_DESTINATION, $i);
+            $imageDetails = getimagesize($filePath);
+            
+            if ($imageDetails && in_array($imageDetails[2], $supportedImageTypes))
+            {
+                resamplePictures($filePath, IMAGE_DESTINATION, IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT);	
+                resamplePictures($filePath, THUMBNAIL_DESTINATION, THUMBNAIL_MAX_WIDTH, THUMBNAIL_MAX_HEIGHT);
+            }
+            else
+            {
+                $error = "Uploaded file is not a supported type"; 
+                unlink($filePath);
+            }
+	}
+	elseif ($_FILES['boxUpload']['error'][$i] == 1)
+	{
+		$error = "Upload file is too large"; 
+	}
+	elseif ($_FILES['boxUpload']['error'][$i] == 4)
+	{
+		$error = "No upload file specified"; 
+	}
+	else
+	{
+            $error  = "Error happened while uploading the file. Try again late"; 
+	}
+    }
+}
+
+
 ?>
+<input type="submit" value="" disabled="disabled" />
 <div class="container">
     <h1>Upload Pictures</h1>
     <p>Accepted File formats: JPG, GIF and PNG</p>  
@@ -28,7 +67,7 @@ if (mysqli_stmt_execute($stmt)){
     <p>When uploading multiple pictures the title and description fields will be applied to all pictures.</p>
 
     <br>    
-    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="POST">
+    <form id="form1" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="POST">
         <div class="form-group">
             <label for="albumTitle">Upload to Album:</label>
             <select name="albumTitle" class="form-control">
@@ -49,11 +88,16 @@ if (mysqli_stmt_execute($stmt)){
         </div>
         <div class="form-group">
             <label for="pictureDescription">Description: </label>
-            <textarea class="form-control" id="description" name="description" class="form-control" rows="8"></textarea>
+            <textarea class="form-control" id="description" name="description" rows="8"></textarea>
         </div>
-        <input type="submit" class="btn btn-primary" name="submit" value="Susbmit">
+        <input type="submit" class="btn btn-primary" name="btnSubmit" value="Submit">
         <br>
         <br>
     </form>
 </div>
+<script>
+    $('#albumTitle').on('change', function() {
+        $('#form1').submit();
+    });
+</script>
 <?php require '/Common/Footer.php';?>
