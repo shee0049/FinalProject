@@ -13,11 +13,11 @@ if ($_SERVER['REQUEST_METHOD']=="POST"){
     if ($errTitle == ""){
         $link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);        
         date_default_timezone_set("America/Toronto");        
-        $title 	        = $_POST['albumTitle'];
-        $accessibility  = $_POST['accessibility'];	
-        $description	= $_POST['description'];
-        $date 			= date('Y-m-d');
-        $userId 		= $_SESSION['username'];
+        $title 	        = mysqli_real_escape_string($_POST['albumTitle']);
+        $accessibility  = mysqli_real_escape_string($_POST['accessibility']);	
+        $description	= mysqli_real_escape_string($_POST['description']);
+        $date 		= mysqli_real_escape_string(date('Y-m-d'));
+        $userId 	= mysqli_real_escape_string($_SESSION['username']);
 
         // Set Prepared Sql statement
         $sql = "INSERT INTO Album (Title, Description, Date_Updated, Owner_id, Accessibility_Code) VALUES(?,?,?,?,?)";

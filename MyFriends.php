@@ -95,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
                         mysqli_stmt_execute($stmt);
                         mysqli_stmt_bind_result($stmt, $shared);
                         mysqli_stmt_fetch($stmt);
-                        echo "<tr><td><a href='FriendPictures.php?userid=$friend'>$friend</a></td><td>$shared</td><td><input type='checkbox' class='defriend' name='defriends[]' value='$friend'></td></tr>";
+                        echo "<tr><td><a href='FriendPictures.php?userid=$friend'>$friend</a></td><td>$shared</td><td><input type='checkbox' name='defriends[]' value='$friend'></td></tr>";
                         mysqli_stmt_close($stmt);
                     }
                 }

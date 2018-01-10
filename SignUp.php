@@ -14,10 +14,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
     if (validateSignUp()){
         $link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
         $student = new User(
-                trim($_POST['studentID']),
-                trim($_POST['studentName']), 
-                trim($_POST['studentPhone']),
-                trim(sha1($_POST['studentPass'])));
+                mysql_real_escape_string(trim($_POST['studentID'])),
+                mysql_real_escape_string(trim($_POST['studentName'])), 
+                mysql_real_escape_string(trim($_POST['studentPhone'])),
+                mysql_real_escape_string(trim(sha1($_POST['studentPass']))));
         
         // check to make sure username isn't already taken.
         $err = checkUser($student->getUserId());

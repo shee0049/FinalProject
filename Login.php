@@ -10,8 +10,8 @@ if ($_SERVER['REQUEST_METHOD']=="POST"){
 
     if ($userErr == "" && $passErr == "") {
         $link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);        
-        $pass = trim(sha1($_POST['studentPass']));
-        $userName = trim($_POST['studentID']);
+        $pass = mysql_real_escape_string(trim(sha1($_POST['studentPass'])));
+        $userName = mysql_real_escape_string(trim($_POST['studentID']));
         
         $sql = "SELECT Userid, Password, Name FROM User WHERE Userid = ?";
         
