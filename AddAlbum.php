@@ -2,14 +2,45 @@
 session_start();
 require '/Common/Loggedin.php';
 require 'Common/Validation.php';
+require 'dbconnection.php';
 
 if (!isset($_SESSION["username"])){
     header("Location: Login.php");
 }
 
-if ($_SERVER['REQUEST_METHOD']=="POST"){
-    $errTitle = testInput($_POST["albumTitle"]);
-    
+if ($_SERVER['REQUEST_METHOD']=="POST"){    
+    $errTitle = testInput($_POST["albumTitle"]);    
+    if ($errTitle == ""){
+        $link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);        
+        date_default_timezone_set("America/Toronto");        
+        $title 	        = $_POST['albumTitle'];
+        $accessibility  = $_POST['accessibility'];	
+        $description	= $_POST['description'];
+        $date 			= date('Y-m-d');
+        $userId 		= $_SESSION['username'];
+
+        // Set Prepared Sql statement
+        $sql = "INSERT INTO Album (Title, Description, Date_Updated, Owner_id, Accessibility_Code) VALUES(?,?,?,?,?)";
+
+        // bind sql to database connection
+        $stmt = mysqli_prepare($link, $sql);
+        // bind parameters to the sql statement ?'s
+        mysqli_stmt_bind_param($stmt, 'sssss', $a, $b, $c, $d, $e);
+        // set parameters to variables
+        $a = $title;
+        $b = $description;
+        $c = $date;
+        $d = $userId;
+        $e = $accessibility;
+        
+        //execute sql statement
+        if(mysqli_stmt_execute($stmt)){
+            // statement is successful, display success msg
+        }else {
+            // display msg that it failed.
+        }
+        mysqli_close($link);
+    }    
 }
 
 ?>
