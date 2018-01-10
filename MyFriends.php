@@ -71,24 +71,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
                 $sql = "SELECT Friendship.Friend_Requesterid, Friendship.Friend_Requesteeid FROM Friendship"
                       . " WHERE (Friendship.Friend_Requesterid=? OR Friendship.Friend_Requesteeid=?)"
                       . " AND Friendship.Status='accepted'";                    
+                
                 $stmt = mysqli_prepare($link, $sql);
                 mysqli_stmt_bind_param($stmt, 'ss', $rq, $re);
                 $rq = $user;
                 $re = $user;    
                 if(mysqli_stmt_execute($stmt)){
-                    mysqli_stmt_bind_result($stmt, $requester, $requestee);                  
-                    while (mysqli_stmt_fetch($stmt)){
+                    mysqli_stmt_bind_result($stmt, $requester, $requestee); 
+                    $userArray = array();
+                    while (mysqli_stmt_fetch($stmt)){                        
                         if($requestee == $user){
-                            echo "<tr><td>$requester</td><td>PLACEHOLDER</td><td><input type='checkbox' class='defriend' name='defriends[]' value='$requester'></td></tr>";
+                            array_push($userArray, $requester);                           
                         }else {
-                            echo "<tr><td>$requestee</td><td>PLACEHOLDER</td><td><input type='checkbox' class='defriend' name='defriends[]' value='$requestee'></td></tr>";
-                        }                    
-                    }                        
+                            array_push($userArray, $requestee);
+                        }                        
+                    }
+                    mysqli_stmt_close($stmt);
+                    foreach ($userArray as $friend) {
+                        $sharedSql = "SELECT COUNT(Album.Title) FROM Album WHERE Album.Owner_Id=? AND Album.Accessibility_Code='shared'";
+                        $stmt = mysqli_prepare($link, $sharedSql);
+                        mysqli_stmt_bind_param($stmt, 's', $u);
+                        $u = $friend;
+                        mysqli_stmt_execute($stmt);
+                        mysqli_stmt_bind_result($stmt, $shared);
+                        mysqli_stmt_fetch($stmt);
+                        echo "<tr><td><a href='FriendPictures.php?userid=$friend'>$friend</a></td><td>$shared</td><td><input type='checkbox' class='defriend' name='defriends[]' value='$friend'></td></tr>";
+                        mysqli_stmt_close($stmt);
+                    }
                 }
             ?>
         </tr>
     </table>
-        <input type="submit" class="warningmsg btn btn-primary" name="defriend" value="Defriend Selected">
+        <input type="submit" class="defriend btn btn-primary" name="defriend" value="Defriend Selected">
     </form>
     <br>
     <br>
@@ -118,7 +132,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
             </tr>            
         </table>
         <input type="submit" class="btn btn-primary" name="accept" value="Accept Selected">          
-        <input type="submit" class="btn btn-primary" name="deny" value="Deny Select">
+        <input type="submit" class="deny btn btn-primary" name="deny" value="Deny Selected">
     </form>
 </div>
 <?php require 'Common/Footer.php' ;?>

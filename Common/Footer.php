@@ -16,12 +16,18 @@
 <script src="Lab4Scripts/site.js"></script>
 <script>
     $(document).ready(function () {
-        $(".warningmsg").on('click', function () {
+        $(".defriend").on('click', function () {
             if(!confirm("The Selected friends will be defriended!")){
                 return false;
             }
         });           
+        $(".deny").on('click', function (){
+            if(!confirm("The Selected friend requests will be denied!")){
+                return false;
+            }
+        });
     });
+    
 </script>
 </body>
 </html>
