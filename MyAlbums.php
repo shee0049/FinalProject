@@ -5,8 +5,47 @@ if (!isset($_SESSION["username"])){
     header("Location: Login.php");
 }
 require 'Common/Loggedin.php';
+require 'dbconnection.php';
+$user = $_SESSION["username"];
+$link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
-
+if ($_GET["action"] == "delete"){
+    $albumid = $_GET["albumid"];
+    
+    $sql = "DELETE FROM Album WHERE Album_id=?";
+    
+    $stmt = mysqli_prepare($link, $sql);
+    
+    mysqli_stmt_bind_param($stmt, 's', $u);
+    
+    $u = $albumid;
+    
+    if(mysqli_stmt_execute($stmt)){
+        mysqli_stmt_close($stmt);        
+        header("Location: MyAlbums.php");
+    }
+}
+if ($_SERVER["REQUEST_METHOD"] == "POST"){
+    
+    $values = $_POST["select"];
+    
+    foreach($values as $value){
+        $split = explode(" ", $value);
+        
+        $access = $split[0];
+        $albumid = $split[1];
+        
+        $sql = "UPDATE Album SET Accessibility_Code=? WHERE Album_id=?";
+        
+        $stmt = mysqli_prepare($link, $sql);
+        mysqli_stmt_bind_param($stmt, 'ss', $a, $u);        
+        $a = $access;
+        $u = $albumid;
+        if (mysqli_stmt_execute($stmt)){
+            header("Location: MyAlbums.php");
+        }
+    }
+}
 ?>
 
    <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data">
@@ -20,30 +59,32 @@ require 'Common/Loggedin.php';
             <th>Date Updated</th>
             <th>Number of Pictures</th>
             <th>Accessibility</th>
+            <th></th>
         </tr>
         
   <?php
+    $sql = "SELECT Album_id, Title, Description, Date_Updated, Accessibility_Code FROM Album WHERE Owner_Id=?";
   
-  $con = mysqli_connect("localhost","PHPSCRIPT","1234","CST8257") or die ("Error connection");
-  
-  $query = "SELECT * FROM Album";
-  
-  $result = mysqli_query($con, $query);
-  
-  while($row = mysqli_fetch_array($result)){
-      echo "<tr>
-      <". "td>".$row["Title"]."</td>
-      <". "td>".$row["Date_Updated"]."</td>
-      <". "td>".$row[""]."</td>
-      <". "td>".$row["Accessibility_Code"]."</td>
-
-     </tr>";
-  }
+    $stmt = mysqli_prepare($link, $sql);
+    mysqli_stmt_bind_param($stmt, 's', $u);
+    $u = $user;
+    $titles = array();
+    if (mysqli_stmt_execute($stmt)){
+        mysqli_stmt_bind_result($stmt,$id, $title, $description, $date, $access);
+        while (mysqli_stmt_fetch($stmt)){
+            echo "<tr><td><a href='MyPictures.php?albumid=$id'>$title</a></td><td>$date</td><td>PLACEHOLDER</td>";
+            if ($access == "shared"){
+                echo "<td><select name='select[]'><option value='shared $id'>Accessibile by the owner and friends</option><option value='private $id'>Accessible only by the owner</option></select></td><td><a href='MyAlbums.php?action=delete&albumid=$id'>Delete</a></td></tr>";
+            }
+            else {
+                echo "<td><select name='select[]'><option value='private $id'>Accessible only by the owner</option><option value='shared $id'>Accessibile by the owner and friends</option></select></td><td><a href='MyAlbums.php?action=delete&albumid=$id'>Delete</a></td></tr>";
+            }
+        }
+    }
   
   ?>
-        
-
     </table>
+    <input type="submit" class="btn btn-primary" value="submit">
 </div>  
    
   </form> 

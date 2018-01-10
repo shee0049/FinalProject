@@ -26,28 +26,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $user = $userid;
 
                 if (mysqli_stmt_execute($stmt)) {
+                                                  
                     mysqli_stmt_store_result($stmt);
                     // If the user is found continue, otherwise error.
                     if (mysqli_stmt_num_rows($stmt) == 1) {
                         mysqli_stmt_bind_result($stmt, $username);
-                    if (mysqli_stmt_fetch($stmt)) {
-                        // Send friend request to user
-                        $fsql = "INSERT INTO Friendship VALUES (?,?,?)";
-                        $friendshipStmt = mysqli_prepare($link, $fsql);
-                        $status = 'request';
-                        mysqli_stmt_bind_param($friendshipStmt, 'sss', $currentUser, $userid, $status);                                              
-                        if(mysqli_execute($friendshipStmt)){
-                            $friendmsg = "Your friend request has been sent to " . $user . " Once " . $user . 
-                                    " Accepts your request. You and " . $user . 
-                                    " will be friends and be able to view each others shared albums.";
-                        }  
-                        else {
-                            $friendmsg = "There was a problem with your request, please try again.";
+                        if (mysqli_stmt_fetch($stmt)) {
+                            // Send friend request to user
+                            $fsql = "INSERT INTO Friendship VALUES (?,?,?)";
+                            $friendshipStmt = mysqli_prepare($link, $fsql);
+                            $status = 'request';                        
+                            mysqli_stmt_bind_param($friendshipStmt, 'sss', $currentUser, $userid, $status);                                              
+                            if(mysqli_execute($friendshipStmt)){
+                                $friendmsg = "Your friend request has been sent to " . $user . " Once " . $user . 
+                                        " Accepts your request. You and " . $user . 
+                                        " will be friends and be able to view each others shared albums.";
+                            }  
+                            else {
+                                $friendmsg = "There was a problem with your request, please try again.";
+                            }
                         }
-                    }
                     } else {
                     $err_StudentId = "Could not find a user with that id.";
-                }
+                    }
                 }
             } else {
                 $err_StudentId = "Could not find a user with that id.";
