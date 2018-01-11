@@ -3,6 +3,7 @@ session_start();
 require '/Common/Loggedin.php'; 
 require 'dbconnection.php';
 include '/Common/Constants.php';
+include '/Common/Functions.php';
 
 if (!isset($_SESSION["username"])){
     header("Location: Login.php");
@@ -23,17 +24,24 @@ if (mysqli_stmt_execute($stmt)){
 }
 
 
-if ($_POST["btnSubmit"] == "Submit") 
+if (isset($_POST["btnSubmit"])) 
 {
-    for($i = 0; $i < count($_FILES["boxUpload"]["tmp_name"]); $i++){
-	if ($_FILES['boxUpload']['error'][$i] == 0)
-	{   
-            $destination = ORIGINAL_IMAGE_DESTINATION;       	// define the path to a folder to save the file
+    $destination = './Pictures';
+    $original = './Pictures/OriginalPictures';
+    $album = './Pictures/AlbumPictures';
+    $thumbnails = './Pictures/AlbumThumbnails';
 
-            if (!file_exists($destination))
-            {
-                mkdir($destination);
-            }
+    if (!file_exists($destination))
+    {
+        mkdir($destination);
+        mkdir($original);
+        mkdir($album);
+        mkdir($thumbnails);
+    }
+            
+    for($i = 0; $i < count($_FILES["files"]["tmp_name"]); $i++){
+	if ($_FILES['files']['error'][$i] == 0)
+	{   
             
             $filePath = Save_Uploaded_Files(ORIGINAL_IMAGE_DESTINATION, $i);
             $imageDetails = getimagesize($filePath);
@@ -49,11 +57,11 @@ if ($_POST["btnSubmit"] == "Submit")
                 unlink($filePath);
             }
 	}
-	elseif ($_FILES['boxUpload']['error'][$i] == 1)
+	elseif ($_FILES['files']['error'][$i] == 1)
 	{
 		$error = "Upload file is too large"; 
 	}
-	elseif ($_FILES['boxUpload']['error'][$i] == 4)
+	elseif ($_FILES['files']['error'][$i] == 4)
 	{
 		$error = "No upload file specified"; 
 	}
@@ -66,6 +74,7 @@ if ($_POST["btnSubmit"] == "Submit")
 
 
 ?>
+
 <input type="submit" value="" disabled="disabled" />
 <div class="container">
     <h1>Upload Pictures</h1>
@@ -74,7 +83,7 @@ if ($_POST["btnSubmit"] == "Submit")
     <p>When uploading multiple pictures the title and description fields will be applied to all pictures.</p>
 
     <br>    
-    <form id="form1" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="POST">
+    <form id="form1" action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
         <div class="form-group">
             <label for="albumTitle">Upload to Album:</label>
             <select name="albumTitle" class="form-control">
