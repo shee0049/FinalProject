@@ -8,8 +8,15 @@ if (!isset($_SESSION["username"])){
     header("Location: Login.php");
 }
 
+           
+    
 if ($_SERVER['REQUEST_METHOD']=="POST"){    
-    $errTitle = testInput($_POST["albumTitle"]);    
+    $errTitle = testInput($_POST["albumTitle"]);
+    
+    if (!$errTitle){
+        echo "<h1>Album succesfully added!</h1>";
+    }
+    
     if ($errTitle == ""){
         $link = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);        
         date_default_timezone_set("America/Toronto");        
