@@ -42,8 +42,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
         $a = $access;
         $u = $albumid;
         if (mysqli_stmt_execute($stmt)){
-            header("Location: MyAlbums.php");
+            $msg = "Album was changed to $a";            
         }
+        else {
+            $msg="There was a problem processing your request.";
+        }         
     }
 }
 ?>
@@ -53,6 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
     <h1 class="center">My Albums</h1>
     <p>Welcome <?php echo $_SESSION["name"]?>! (not you? change user <a href="Login.php">here!</a>)</p>
     <p><a href="AddAlbum.php">Create a New Album</a></p>
+    <span class="error"><?php echo $msg;?></span>
     <table class="table">      
         <tr>
             <th>Title</th>
@@ -63,21 +67,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
         </tr>
         
   <?php
-    $sql = "SELECT Album_id, Title, Description, Date_Updated, Accessibility_Code FROM Album WHERE Owner_Id=?";
+    $sql = "SELECT Album_id, Title, Date_Updated, Accessibility_Code FROM Album WHERE Owner_Id=?";
   
     $stmt = mysqli_prepare($link, $sql);
     mysqli_stmt_bind_param($stmt, 's', $u);
     $u = $user;
     $titles = array();
     if (mysqli_stmt_execute($stmt)){
-        mysqli_stmt_bind_result($stmt,$id, $title, $description, $date, $access);
+        mysqli_stmt_bind_result($stmt,$id, $title, $date, $access);
         while (mysqli_stmt_fetch($stmt)){
             echo "<tr><td><a href='MyPictures.php?albumid=$id'>$title</a></td><td>$date</td><td>PLACEHOLDER</td>";
             if ($access == "shared"){
-                echo "<td><select name='select[]'><option value='shared $id'>Accessibile by the owner and friends</option><option value='private $id'>Accessible only by the owner</option></select></td><td><a href='MyAlbums.php?action=delete&albumid=$id'>Delete</a></td></tr>";
+                echo "<td><select class='form-control' name='select[]'><option value='shared $id'>Accessibile by the owner and friends</option><option value='private $id'>Accessible only by the owner</option></select></td><td><a class='delete' href='MyAlbums.php?action=delete&albumid=$id'>Delete</a></td></tr>";
             }
             else {
-                echo "<td><select name='select[]'><option value='private $id'>Accessible only by the owner</option><option value='shared $id'>Accessibile by the owner and friends</option></select></td><td><a href='MyAlbums.php?action=delete&albumid=$id'>Delete</a></td></tr>";
+                echo "<td><select class='form-control' name='select[]'><option value='private $id'>Accessible only by the owner</option><option value='shared $id'>Accessibile by the owner and friends</option></select></td><td><a class='delete' href='MyAlbums.php?action=delete&albumid=$id'>Delete</a></td></tr>";
             }
         }
     }

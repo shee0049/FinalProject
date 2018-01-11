@@ -56,7 +56,7 @@ function ValidatePhone($phone) {
     $regex = "/^[2-9]\d{2}-[2-9]\d{2}-\d{4}$/";
 
     if (!preg_match($regex, $phone)) {
-        $err_phone = '*Incorrect phone number';
+        $err_phone = '*Phone number must be in form (nnn-nnn-nnnn)';
         return FALSE;
     }
     $err_phone = '';
