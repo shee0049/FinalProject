@@ -148,7 +148,7 @@ if (isset($_POST["btnSubmit"]))
         </div>    
         <div class="form-group">
             <label for="selectedFiles">File to upload:</label>
-            <input type="file" class="form-control" id="selectedFiles" name="image[]" accept="image/*" multiple size="40"">
+            <input type="file" class="form-control" id="selectedFiles" name="image[]" accept="image/*" multiple size="40">
         </div>        
         <div class="form-group">
             <label for="pictureTitle">Title:</label>
