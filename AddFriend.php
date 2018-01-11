@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <div class="container">
     <h1>Add Friend</h1>
-    <p>Welcome <?php echo $_SESSION["name"]; ?> (not you? change user <a href="Login.php">here</a>) </p><br>
+    <p>Welcome <?php echo htmlspecialchars($_SESSION["name"]); ?> (not you? change user <a href="Login.php">here</a>) </p><br>
     <p>Enter the ID of the user you want to add.</p>
     <span class="error"><?php echo $friendmsg ?></span>
     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">

@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
 }
 ?>
 
-   <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data">
+<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post" enctype="multipart/form-data">
 <div class="container">
     <h1 class="center">My Albums</h1>
     <p>Welcome <?php echo $_SESSION["name"]?>! (not you? change user <a href="Login.php">here!</a>)</p>
