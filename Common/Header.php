@@ -30,7 +30,7 @@
                         <li class="active"><a href="Index.php">Home </a></li>
                         <li><a href="MyFriends.php">My Friends</a></li>
                         <li><a href="MyAlbums.php">My Albums</a></li>
-                        <li><a href="#">My Pictures</a></li>
+                        <li><a href="MyPictures.php">My Pictures</a></li>
                         <li><a href="UploadPictures.php">Upload Pictures</a></li>
                         <li><a href="Login.php">Log in</a></li>                                  
                     </ul>

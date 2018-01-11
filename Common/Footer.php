@@ -26,6 +26,11 @@
                 return false;
             }
         });
+        $(".delete").on('click', function (){
+           if (!confirm("This album will be deleted, are you sure?")){
+               return false;
+           } 
+        });
     });
     
 </script>

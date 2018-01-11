@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
             mysqli_stmt_bind_param($insertUserStmt, 'ssss', $student->getUserId(), $student->getName(), $student->getPhone(), $student->getPassword());
             mysqli_stmt_execute($insertUserStmt);
             mysqli_close($link);
-            header("Location: index.php");
+            header("Location: Login.php");
         }         
     }
 }
