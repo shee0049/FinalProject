@@ -41,8 +41,7 @@ if (isset($_POST["btnSubmit"]))
             
     for($i = 0; $i < count($_FILES["files"]["tmp_name"]); $i++){
 	if ($_FILES['files']['error'][$i] == 0)
-	{   
-            
+	{     
             $filePath = Save_Uploaded_Files(ORIGINAL_IMAGE_DESTINATION, $i);
             $imageDetails = getimagesize($filePath);
             
@@ -83,7 +82,7 @@ if (isset($_POST["btnSubmit"]))
     <p>When uploading multiple pictures the title and description fields will be applied to all pictures.</p>
 
     <br>    
-    <form id="form1" action="<?php echo $_SERVER['PHP_SELF'];?>" method="POST">
+    <form id="form1" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>" method="POST" enctype="multipart/form-data">
         <div class="form-group">
             <label for="albumTitle">Upload to Album:</label>
             <select name="albumTitle" class="form-control">
@@ -96,7 +95,7 @@ if (isset($_POST["btnSubmit"]))
         </div>    
         <div class="form-group">
             <label for="selectedFiles">File to upload:</label>
-            <input type="file" class="form-control" id="selectedFiles" name="files[]" multiple="multiple" accept="image/x-png,image/gif,image/jpeg">
+            <input type="file" class="form-control" id="selectedFiles" name="files[]" multiple accept="image/*" size="40">
         </div>
         <div class="form-group">
             <label for="pictureTitle">Title:</label>
