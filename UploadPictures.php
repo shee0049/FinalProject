@@ -27,7 +27,14 @@ if ($_POST["btnSubmit"] == "Submit")
 {
     for($i = 0; $i < count($_FILES["boxUpload"]["tmp_name"]); $i++){
 	if ($_FILES['boxUpload']['error'][$i] == 0)
-	{ 	
+	{   
+            $destination = ORIGINAL_IMAGE_DESTINATION;       	// define the path to a folder to save the file
+
+            if (!file_exists($destination))
+            {
+                mkdir($destination);
+            }
+            
             $filePath = Save_Uploaded_Files(ORIGINAL_IMAGE_DESTINATION, $i);
             $imageDetails = getimagesize($filePath);
             
